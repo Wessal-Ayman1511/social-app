@@ -15,7 +15,8 @@ export const register = joi.object({
     phone: joi.string().required(),
     gender: joi.string().valid(...Object.values(genders)),
     role: joi.string().valid(...Object.values(roles)),
-    otp: joi.string().length(5).required()
+    otp: joi.string().length(5).required(),
+    // profilePic: joi.string()
 }).required()
 
 

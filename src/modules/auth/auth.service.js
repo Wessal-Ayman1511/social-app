@@ -76,9 +76,7 @@ export const login = async (req, res, next) => {
 
   const existUser = await User.findOne({ email });
 
-  if (!existUser.isConfirmed) {
-    return next(new Error("verify your account first", { cause: 401 }));
-  }
+
 
   const matched = compare({ data: password, hashedData: existUser.password });
   if (!existUser || !matched) {
@@ -90,7 +88,7 @@ export const login = async (req, res, next) => {
 
   const accessToken = generateToken({
     payload: { id: existUser._id, email },
-    options: { expiresIn: "10s" },
+    options: { expiresIn: "1d" },
   });
   const refreshToken = generateToken({
     payload: { id: existUser._id, email },

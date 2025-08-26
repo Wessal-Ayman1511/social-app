@@ -49,7 +49,8 @@ const userSchema = new Schema(
     },
     deletedAt: {
       type: Date
-    }
+    },
+    profilePic: String
   },
   { timestamps: true }
 );

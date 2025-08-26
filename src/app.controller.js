@@ -5,6 +5,7 @@ import { globalError } from "./utils/error/global-error.js";
 import { notFound } from "./utils/error/not-found.js";
 const bootStrap = async (app, express) => {
   app.use(express.json());
+  app.use('/uploads', express.static('uploads'))
   await dbConnection();
   app.get('/test', (req, res) => {
     return res.json({message: "welcome"})

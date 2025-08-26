@@ -16,6 +16,6 @@ const otpSchema = new Schema({
     }
 }, {timestamps:true})
 
-otpSchema.index({destroyedAt: 1}, {expireAfterSeconds:60})
+otpSchema.index({destroyedAt: 1}, {expireAfterSeconds:60 * 5})
 
 export const OTP = model('otp', otpSchema)

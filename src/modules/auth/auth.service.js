@@ -11,31 +11,75 @@ import {
 } from "../../utils/index.js";
 import { messages } from "../../utils/messages.js/index.js";
 import { OTP } from "../../db/models/otp.model.js";
+import { OAuth2Client } from "google-auth-library";
 // we hash password(one way), we encrypt personal info(two way)
 
+const verifyGoogleToken = async (idToken) => {
+  const client = new OAuth2Client();
+
+  const ticket = await client.verifyIdToken({
+    idToken,
+    audience: process.env.CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+  return payload;
+};
+
+export const googleLogin = async (req, res, next) => {
+  const { idToken } = req.body;
+  const payload = await verifyGoogleToken(idToken);
+  const { email, name, picture } = payload;
+
+  let existUser = await User.findOne({ email });
+
+  if (!existUser) {
+     existUser = await User.create({
+      userName: name,
+      email,
+      profilePic: picture,
+      provider: 'google'
+    });
+  }
+
+  const accessToken = generateToken({
+    payload: { id: existUser._id, email },
+    options: { expiresIn: "1d" },
+  });
+  const refreshToken = generateToken({
+    payload: { id: existUser._id, email },
+    options: { expiresIn: "7d" },
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "login successfully",
+    accessToken,
+    refreshToken,
+  });
+};
 export const sendOTP = async (req, res, next) => {
-  const {email} = req.body
-  const existUser = await User.findOne({email: email})
-  if(existUser) return next(new Error(messages.user.alreadyExist, {cause:400}))
-  const otp = Randomstring.generate({length:5, "charset":"numeric"})
-  sendEmailEvent.emit('sendEmail', email, otp)
-  await OTP.create({email,otp})
+  const { email } = req.body;
+  const existUser = await User.findOne({ email: email });
+  if (existUser)
+    return next(new Error(messages.user.alreadyExist, { cause: 400 }));
+  const otp = Randomstring.generate({ length: 5, charset: "numeric" });
+  sendEmailEvent.emit("sendEmail", email, otp);
+  await OTP.create({ email, otp });
 
-
-  return res.status(201).json({success: true, message: "check ur email for the OTP"})
-  
-}
-
+  return res
+    .status(201)
+    .json({ success: true, message: "check ur email for the OTP" });
+};
 
 export const register = async (req, res, next) => {
   const { userName, email, password, phone, role, otp } = req.body;
-  const existOtp = await OTP.findOne({email})
- 
-  if(!existOtp){
-    return next(new Error(messages.otp.notFound, {cause:404}))
+  const existOtp = await OTP.findOne({ email });
+
+  if (!existOtp) {
+    return next(new Error(messages.otp.notFound, { cause: 404 }));
   }
-  if(existOtp.otp != otp){
-    return next(new Error("invalid OTP", {cause:400}))
+  if (existOtp.otp != otp) {
+    return next(new Error("invalid OTP", { cause: 400 }));
   }
 
   const user = await User.create({
@@ -45,9 +89,6 @@ export const register = async (req, res, next) => {
     phone: encypt({ data: phone }),
     role,
   });
-
-
-
 
   return res.status(201).json({
     success: true,
@@ -75,8 +116,6 @@ export const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   const existUser = await User.findOne({ email });
-
-
 
   const matched = compare({ data: password, hashedData: existUser.password });
   if (!existUser || !matched) {
@@ -115,5 +154,5 @@ export const refreshToken = async (req, res, next) => {
     options: { expiresIn: "1h" },
   });
 
-  return res.status(201).json({success: true, accessToken})
+  return res.status(201).json({ success: true, accessToken });
 };

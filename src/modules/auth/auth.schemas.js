@@ -1,7 +1,9 @@
 import joi from "joi";
 import { genders, roles } from "../../db/models/user.model.js";
 
-
+export const googleLogin = joi.object({
+    idToken: joi.string().required()
+}).required()
 export const sendOTP = joi.object({
     email: joi.string().email().required()
 }).required()

@@ -28,11 +28,15 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function() {
+        return this.provider == 'system'? true : false
+      },
     },
     phone: {
       type: String,
-      required: true,
+      required: function() {
+        return this.provider == 'system'? true : false
+      },
       unique: [true, 'phone already exist']
     },
     gender: {
@@ -50,7 +54,12 @@ const userSchema = new Schema(
     deletedAt: {
       type: Date
     },
-    profilePic: String
+    profilePic: String,
+    provider: {
+      type: String,
+      enum: ['google', 'system'],
+      default: 'system'
+    }
   },
   { timestamps: true }
 );

@@ -5,6 +5,7 @@ import { isValid } from "../../middlewares/validation.middleware.js";
 import * as authSchemas from './auth.schemas.js'
 
 const router = Router()
+router.post('/google-login', isValid(authSchemas.googleLogin), asyncHandler(authServices.googleLogin))
 router.post('/send-otp', isValid(authSchemas.sendOTP), asyncHandler(authServices.sendOTP))
 router.post('/register', isValid(authSchemas.register),asyncHandler(authServices.register))
 router.post('/login',isValid(authSchemas.login) ,asyncHandler(authServices.login))

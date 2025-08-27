@@ -1,7 +1,7 @@
 import express from 'express'
 import bootStrap from './src/app.controller.js'
 const app = express()
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3001
 bootStrap(app, express)
 
 

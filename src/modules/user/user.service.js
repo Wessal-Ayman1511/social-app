@@ -1,6 +1,8 @@
-import { User } from "../../db/models/user.model.js";
+import path from "path";
+import { defaultProfilePic, User } from "../../db/models/user.model.js";
 import { decrypt } from "../../utils/index.js";
 import { messages } from "../../utils/messages.js/index.js";
+import fs from 'fs'
 
 export const getProfile = async (req, res, next) => {
 
@@ -22,7 +24,13 @@ export const freezeAccount = async(req, res, next) => {
 
 export  const uploadProfilePic = async(req, res, next) => {
 
-  const user = await User.findOneAndUpdate(req.authUser._id, {
+
+  const fullPath = path.resolve(req.authUser.profilePic)
+
+
+  if(fs.existsSync(fullPath) && req.authUser.profilePic != defaultProfilePic)  fs.unlinkSync(fullPath)
+
+  const user = await User.findByIdAndUpdate(req.authUser._id, {
     profilePic: req.file.path
   }, {
     new: true
@@ -34,4 +42,10 @@ export  const uploadProfilePic = async(req, res, next) => {
 
   })
 
+}
+
+export const uploadCoverPic = async(req, res, next) => {
+  const coverPics = req.files.map(file => file.path)
+  await User.updateOne({_id: req.authUser._id}, {coverPics})
+  return res.status(201).json({success:true, message: "coverPic uploaded successfully"})
 }

@@ -13,6 +13,8 @@ export const roles = {
   USER: 'user'
 }
 
+export const defaultProfilePic = "uploads/default.jpeg"
+
 const userSchema = new Schema(
   {
     userName: {
@@ -54,7 +56,11 @@ const userSchema = new Schema(
     deletedAt: {
       type: Date
     },
-    profilePic: String,
+    profilePic: {
+      type: String,
+      default: defaultProfilePic
+    },
+    coverPics: [String],
     provider: {
       type: String,
       enum: ['google', 'system'],

@@ -8,6 +8,7 @@ const generateMessages = (entity) => ({
 
 export const messages = {
     user: {...generateMessages('User'), incorrectPass: "user incorrect password"},
-    otp: {...generateMessages('OTP')}
+    otp: {...generateMessages('OTP')},
+    post: {...generateMessages('Post')}
     
 }

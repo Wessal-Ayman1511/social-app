@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import {hash} from '../../utils/index.js'
+import { hash } from "../../utils/index.js";
 
 export const genders = {
   MALE: "male",
@@ -9,37 +9,40 @@ export const genders = {
 };
 
 export const roles = {
-  ADMIN: 'admin',
-  USER: 'user'
-}
+  ADMIN: "admin",
+  USER: "user",
+};
 
-export const defaultProfilePic = "uploads/default.jpeg"
+export const defaultProfilePic = "uploads/default.jpeg";
+export const defaultSecureUrl =
+  "https://res.cloudinary.com/dheqckgyt/image/upload/v1756844329/download_wnzi7h.jpg";
+export const defaultPublicId = "download_wnzi7h";
 
 const userSchema = new Schema(
   {
     userName: {
       type: String,
       required: true,
-      unique: [true, 'usename already exist'],
+      unique: [true, "usename already exist"],
     },
     email: {
       type: String,
       required: true,
-      unique: [true, 'email already exist'],
-      lowercase: true
+      unique: [true, "email already exist"],
+      lowercase: true,
     },
     password: {
       type: String,
-      required: function() {
-        return this.provider == 'system'? true : false
+      required: function () {
+        return this.provider == "system" ? true : false;
       },
     },
     phone: {
       type: String,
-      required: function() {
-        return this.provider == 'system'? true : false
+      required: function () {
+        return this.provider == "system" ? true : false;
       },
-      unique: [true, 'phone already exist']
+      unique: [true, "phone already exist"],
     },
     gender: {
       type: String,
@@ -47,38 +50,56 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: Object.values(roles)
+      enum: Object.values(roles),
     },
     isDeleted: {
       type: Boolean,
-      default: false
+      default: false,
     },
     deletedAt: {
-      type: Date
+      type: Date,
     },
+    // profilePic: {
+    //   type: String,
+    //   default: defaultProfilePic
+    // },
     profilePic: {
-      type: String,
-      default: defaultProfilePic
+      secure_url: {
+        type: String,
+        default: defaultSecureUrl,
+      },
+      public_id: {
+        type: String,
+        default: defaultPublicId,
+      },
     },
-    coverPics: [String],
+    // coverPics: [String],
+    coverPics: [{
+      secure_url: {
+        type: String,
+        default: defaultSecureUrl,
+      },
+      public_id: {
+        type: String,
+        default: defaultPublicId,
+      },
+    }],
     provider: {
       type: String,
-      enum: ['google', 'system'],
-      default: 'system'
-    }
+      enum: ["google", "system"],
+      default: "system",
+    },
   },
   { timestamps: true }
 );
-userSchema.pre("save", function(next){
-  if(this.isModified('password')){
-    this.password = hash({data: this.password})
+userSchema.pre("save", function (next) {
+  if (this.isModified("password")) {
+    this.password = hash({ data: this.password });
   }
-  return next()
-})
+  return next();
+});
 export const User = model("user", userSchema);
-
 
 // Key takeaway from the example:
 // If you want historical snapshots → embed.
 // If you want live, reusable data → reference.
-

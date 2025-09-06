@@ -18,5 +18,11 @@ router.post(
     isValid(postSchemas.createPost),
     asyncHandler(postServices.createPost)
 )
-
+router.patch(
+    '/like-unlike/:id',
+    isAuthenticated,
+    isAuthorized(roles.USER),
+    isValid(postSchemas.likeOrUnlike),
+    asyncHandler(postServices.likeOrUnlike)
+)
 export default router

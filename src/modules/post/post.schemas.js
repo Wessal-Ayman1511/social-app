@@ -1,4 +1,5 @@
 import joi from 'joi'
+import { isValidId } from '../../middlewares/validation.middleware.js'
 
 export const createPost = joi.object({
     content: joi.string()
@@ -21,3 +22,7 @@ export const createPost = joi.object({
 })
 .or('content', 'attachment')  
 .required() 
+
+export const likeOrUnlike = joi.object({
+    id: joi.custom(isValidId).required()
+})

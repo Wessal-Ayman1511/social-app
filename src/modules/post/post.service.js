@@ -16,3 +16,15 @@ export const createPost = async (req, res, next) => {
     return res.status(201).json({success: true, message: messages.post.createdSuccessfully, data: createdPost})
 
 }
+
+export const likeOrUnlike = async(req, res, next) => {
+    const {id} = req.params
+    const post = await Post.findById(id)
+    if(!post) return next(new Error(messages.post.notFound, {cause: 404}))
+    
+    const userIdex = post.likes.indexOf(req.authUser._id)
+    userIdex == -1? post.likes.push(req.authUser._id):post.likes.splice(userIdex, 1)
+
+    const updatedPost = await post.save()
+    return res.status(200).json({success: true,  data:updatedPost})
+}

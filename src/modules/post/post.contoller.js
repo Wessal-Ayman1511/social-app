@@ -25,4 +25,11 @@ router.patch(
     isValid(postSchemas.likeOrUnlike),
     asyncHandler(postServices.likeOrUnlike)
 )
+
+router.get(
+    '/',
+    isAuthenticated,
+    isAuthorized(roles.USER),
+    asyncHandler(postServices.getPosts)
+)
 export default router

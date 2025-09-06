@@ -106,7 +106,7 @@ export const uploadCoverPicCloud = async (req, res, next) => {
   const user = await User.updateOne({ _id: req.authUser._id }, { $push: { coverPics: { $each: coverPics } } });
   return res
     .status(201)
-    .json({ success: true, message: "coverPic uploaded successfully", user });
+    .json({ success: true, message: "coverPic uploaded successfully", data:user });
 };
 
 // try on postman
@@ -146,5 +146,5 @@ export const deleteprofilePicCloud = async (req, res, next) => {
 
   return res
     .status(201)
-    .json({ success: true, message: "profile pic deleted successfully", user });
+    .json({ success: true, message: "profile pic deleted successfully", data:user });
 };

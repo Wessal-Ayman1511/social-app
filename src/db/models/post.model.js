@@ -17,7 +17,7 @@ const postSchema = new Schema(
         },
       ],
     },
-    publisherId: {
+    publisher: {
         type: Types.ObjectId,
         ref: "User",
         required: true
@@ -34,4 +34,4 @@ const postSchema = new Schema(
   { timestamps: true }
 );
 
-export const Post = model('post', postSchema)
+export const Post = model('Post', postSchema)

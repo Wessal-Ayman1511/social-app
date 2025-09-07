@@ -1,15 +1,16 @@
-import joi from 'joi'
-import { isValidId } from '../../middlewares/validation.middleware.js'
+import joi from "joi";
+import { isValidId } from "../../middlewares/validation.middleware.js";
 
-export const createPost = joi.object({
-    content: joi.string()
+export const createPost = joi
+  .object({
+    content: joi.string(),
     // .when("attachment", {
     //     is: joi.exist(),
     //     then: joi.optional(),
     //     otherwise: joi.required()
     // })
-    ,
-    attachment: joi.array().items(joi.object({
+    attachment: joi.array().items(
+      joi.object({
         fieldname: joi.string().required(),
         originalname: joi.string().required(),
         encoding: joi.string().required(),
@@ -17,12 +18,18 @@ export const createPost = joi.object({
         destination: joi.string().required(),
         filename: joi.string().required(),
         path: joi.string().required(),
-        size: joi.number().required()
-    }))
-})
-.or('content', 'attachment')  
-.required() 
+        size: joi.number().required(),
+      })
+    ),
+  })
+  .or("content", "attachment")
+  .required();
 
 export const likeOrUnlike = joi.object({
-    id: joi.custom(isValidId).required()
-})
+  id: joi.custom(isValidId).required(),
+});
+
+
+export const getSpecificPost = joi.object({
+  id: joi.custom(isValidId).required(),
+});

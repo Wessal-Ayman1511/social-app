@@ -44,42 +44,54 @@ export const likeOrUnlike = async (req, res, next) => {
 };
 
 export const getPosts = async (req, res, next) => {
-  // 1) use of populate
-//   const posts = await Post.find().populate([
-//     { path: "publisher", select: "userName profilePic.secure_url" },
-//     { path: "likes", select: "userName profilePic.serure_url" },
-//   ]);
-    const posts = await Post.aggregate([
-        {
-            $lookup: {
-                from: 'users',
-                foreignField: '_id',
-                localField: 'publisher',
-                as: 'publisher'
-            }
-        },
-        {
-            $unwind: '$publisher' // we do unwind because there is only one publisher and we want to access data from it in the next pipleline
-        },
-        {
-            $lookup: {
-                from: 'users',
-                foreignField: '_id',
-                localField: 'likes',
-                as: 'likes'
-            }
-        },
-        {
-            $project: {
-                'content': 1,
-                'attachment.secure_url': 1,
-                'publisher.userName': 1,
-                'publisher.profilePic.secure_url': 1,
-                'likes.userName':1,
-                'likes.profilePic.secure_url': 1
-            }
-        }
-    ])
+  //1) use of populate
+  const posts = await Post.find().populate([
+    { path: "publisher", select: "userName profilePic.secure_url" },
+    { path: "likes", select: "userName profilePic.serure_url" },
+    {path: "comments", populate: [{path: 'user', select: "userName"}]}
+  ]);
+    // const posts = await Post.aggregate([
+    //     {
+    //         $lookup: {
+    //             from: 'users',
+    //             foreignField: '_id',
+    //             localField: 'publisher',
+    //             as: 'publisher'
+    //         }
+    //     },
+    //     {
+    //         $unwind: '$publisher' // we do unwind because there is only one publisher and we want to access data from it in the next pipleline
+    //     },
+    //     {
+    //         $lookup: {
+    //             from: 'users',
+    //             foreignField: '_id',
+    //             localField: 'likes',
+    //             as: 'likes'
+    //         }
+    //     },
+    //     {
+    //         $project: {
+    //             'content': 1,
+    //             'attachment.secure_url': 1,
+    //             'publisher.userName': 1,
+    //             'publisher.profilePic.secure_url': 1,
+    //             'likes.userName':1,
+    //             'likes.profilePic.secure_url': 1
+    //         }
+    //     }
+    // ])
+
+  return res.status(200).json({ success: true, data: posts });
+};
+export const getSpecificPost = async (req, res, next) => {
+  //1) use of populate
+  const posts = await Post.find().populate([
+    { path: "publisher", select: "userName profilePic.secure_url" },
+    { path: "likes", select: "userName profilePic.serure_url" },
+    {path: "comments", match: {parentComment: {$exists: false}}} // this get first layer comments
+  ]);
+
 
   return res.status(200).json({ success: true, data: posts });
 };

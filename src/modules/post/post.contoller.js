@@ -8,8 +8,12 @@ import { fileTypes } from "../../utils/file-uploads/multer.js";
 import * as postSchemas from './post.schemas.js'
 import { asyncHandler } from "../../utils/index.js";
 import * as postServices from './post.service.js'
+import commentRouter from '../comment/comment.controller.js'
 
 const router = Router()
+
+router.use('/:postId/comment', commentRouter)
+
 router.post(
     '/',
     isAuthenticated,
@@ -31,5 +35,12 @@ router.get(
     isAuthenticated,
     isAuthorized(roles.USER),
     asyncHandler(postServices.getPosts)
+)
+router.get(
+    '/:id',
+    isAuthenticated,
+    isAuthorized(roles.USER),
+    isValid(postSchemas.getSpecificPost),
+    asyncHandler(postServices.getSpecificPost)
 )
 export default router

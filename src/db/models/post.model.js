@@ -18,20 +18,28 @@ const postSchema = new Schema(
       ],
     },
     publisher: {
-        type: Types.ObjectId,
-        ref: "User",
-        required: true
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    likes: [{
+    likes: [
+      {
         type: Types.ObjectId,
         ref: "User",
-    }],
+      },
+    ],
     isDeleted: {
-        type: Boolean,
-        default: false
-    }
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-export const Post = model('Post', postSchema)
+postSchema.virtual("comments", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "post",
+});
+
+export const Post = model("Post", postSchema);

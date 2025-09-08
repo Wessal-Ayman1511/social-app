@@ -1,5 +1,8 @@
 import joi from "joi";
-import { generalFields, isValidId } from "../../middlewares/validation.middleware.js";
+import {
+  generalFields,
+  isValidId,
+} from "../../middlewares/validation.middleware.js";
 /**
  * @params postId
  * @body text
@@ -21,7 +24,17 @@ export const createComment = joi
  */
 export const getComment = joi
   .object({
-
     postId: generalFields.id,
+    id: joi.custom(isValidId)
   })
   .required();
+/**
+ * @params postId, id => comment
+ */
+export const deleteComment = joi
+  .object({
+    postId: generalFields.id,
+    id: generalFields.id
+  })
+  .required();
+

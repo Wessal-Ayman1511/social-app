@@ -1,6 +1,7 @@
 import { Post } from "../../db/models/post.model.js";
 import cloudinary from "../../utils/file-uploads/cloud-config.js";
 import { messages } from "../../utils/messages.js/index.js";
+import { Comment } from "../../db/models/comment.model.js";
 
 export const createPost = async (req, res, next) => {
   // upload to cloud
@@ -95,3 +96,41 @@ export const getSpecificPost = async (req, res, next) => {
 
   return res.status(200).json({ success: true, data: posts });
 };
+
+export const hardDeleteOfPost = async(req, res, next) => {
+    // find post >> delete its attachements from cloud >> delete related comments
+
+    const {id} = req.params
+
+    const post = await Post.findOneAndDelete({
+        _id: id,
+        publisher: req.authUser._id
+    }).populate([
+        {path: 'comments', match: {parentComment: {$exists: false}}, select: '_id attachment'}
+    ])
+
+    if(!post) return next(new Error(messages.post.notFound, {cause: 404}))
+
+
+    
+    
+    for (const item of post.attachment) {
+        await cloudinary.uploader.destroy(item.public_id)
+    }
+
+
+    for (const comment of post.comments) {
+        if (comment.attachment.public_id) await cloudinary.uploader.destroy(comment.attachment.public_id)
+        await comment.deleteOne()
+        
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: messages.post.deletedSuccessfully
+    })
+
+
+
+
+}

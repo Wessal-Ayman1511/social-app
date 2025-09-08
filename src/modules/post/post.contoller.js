@@ -44,3 +44,11 @@ router.get(
     asyncHandler(postServices.getSpecificPost)
 )
 export default router
+
+router.delete(
+    '/:id',
+    isAuthenticated,
+    isAuthorized(roles.USER),
+    isValid(postSchemas.hardDeleteOfPost),
+    asyncHandler(postServices.hardDeleteOfPost)
+)

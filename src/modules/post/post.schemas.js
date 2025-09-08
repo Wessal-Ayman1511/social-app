@@ -1,5 +1,5 @@
 import joi from "joi";
-import { isValidId } from "../../middlewares/validation.middleware.js";
+import { generalFields, isValidId } from "../../middlewares/validation.middleware.js";
 
 export const createPost = joi
   .object({
@@ -26,10 +26,15 @@ export const createPost = joi
   .required();
 
 export const likeOrUnlike = joi.object({
-  id: joi.custom(isValidId).required(),
+  id: generalFields.id
 });
 
 
 export const getSpecificPost = joi.object({
-  id: joi.custom(isValidId).required(),
+  id: generalFields.id
+});
+
+
+export const hardDeleteOfPost = joi.object({
+  id: generalFields.id
 });

@@ -38,3 +38,9 @@ export const getSpecificPost = joi.object({
 export const hardDeleteOfPost = joi.object({
   id: generalFields.id
 });
+export const archive = joi.object({
+  id: generalFields.id
+});
+export const restore = joi.object({
+  id: generalFields.id
+});

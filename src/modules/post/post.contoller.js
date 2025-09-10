@@ -52,3 +52,18 @@ router.delete(
     isValid(postSchemas.hardDeleteOfPost),
     asyncHandler(postServices.hardDeleteOfPost)
 )
+
+router.patch(
+    '/archive/:id',
+    isAuthenticated,
+    isAuthorized(roles.USER),
+    isValid(postSchemas.archive),
+    asyncHandler(postServices.archive)
+)
+router.patch(
+    '/restore/:id',
+    isAuthenticated,
+    isAuthorized(roles.USER),
+    isValid(postSchemas.restore),
+    asyncHandler(postServices.restore)
+)

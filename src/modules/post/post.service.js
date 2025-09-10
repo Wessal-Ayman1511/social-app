@@ -87,15 +87,16 @@ export const getPosts = async (req, res, next) => {
 };
 export const getSpecificPost = async (req, res, next) => {
   //1) use of populate
-  const posts = await Post.find().populate([
+  const {id} = req.params
+  const post = await Post.findOne({_id: id, isDeleted:false}).populate([
     { path: "publisher", select: "userName profilePic.secure_url" },
     { path: "likes", select: "userName profilePic.serure_url" },
     {path: "comments", match: {parentComment: {$exists: false}}} // this get first layer comments
   ]);
 
 
-  return res.status(200).json({ success: true, data: posts });
-};
+  return post?res.status(200).json({ success: true, data: post }):next(new Error(messages.post.notFound, {cause:404}));
+}; 
 
 export const hardDeleteOfPost = async(req, res, next) => {
     // find post >> delete its attachements from cloud >> delete related comments
@@ -130,7 +131,41 @@ export const hardDeleteOfPost = async(req, res, next) => {
         message: messages.post.deletedSuccessfully
     })
 
+}
 
+export const archive = async(req, res, next) => {
+    const {id} = req.params
 
+    const post = await Post.findOneAndUpdate({
+        _id: id,
+        publisher: req.authUser._id,
+        isDeleted: false
+    }, {
+        isDeleted: true
+    })
 
+    if(!post) return next(new Error(messages.post.notFound, {cause: 400}))
+    
+    return res.status(200).json({
+        success: true,
+        message: 'Post Archived Successfully'
+    })
+}
+export const restore = async(req, res, next) => {
+    const {id} = req.params
+
+    const post = await Post.findOneAndUpdate({
+        _id: id,
+        publisher: req.authUser._id,
+        isDeleted: true
+    }, {
+        isDeleted: false
+    })
+
+    if(!post) return next(new Error(messages.post.notFound, {cause: 400}))
+    
+    return res.status(200).json({
+        success: true,
+        message: 'Post Restored Successfully'
+    })
 }

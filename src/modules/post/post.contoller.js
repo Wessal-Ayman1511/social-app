@@ -32,8 +32,9 @@ router.patch(
 
 router.get(
     '/',
-    isAuthenticated,
-    isAuthorized(roles.USER),
+    // isAuthenticated,
+    // isAuthorized(roles.USER),
+    isValid(postSchemas.getPosts),
     asyncHandler(postServices.getPosts)
 )
 router.get(

@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 import { hash } from "../../utils/index.js";
 
 export const genders = {
@@ -9,8 +9,12 @@ export const genders = {
 };
 
 export const roles = {
-  ADMIN: "admin",
   USER: "user",
+  ADMIN: "admin",
+  SUPER_ADMIN: 'superAdmin',
+  OWNER: 'owner'
+  
+  
 };
 
 export const defaultProfilePic = "uploads/default.jpeg";
@@ -89,6 +93,10 @@ const userSchema = new Schema(
       enum: ["google", "system"],
       default: "system",
     },
+    updatedBy: {
+      type: Types.ObjectId,
+      ref: 'User'
+    }
   },
   { timestamps: true }
 );

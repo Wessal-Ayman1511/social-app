@@ -34,6 +34,11 @@ export const getSpecificPost = joi.object({
   id: generalFields.id
 });
 
+export const getPosts = joi.object({
+    page: joi.number().min(1),
+    size: joi.number().min(1)
+})
+
 
 export const hardDeleteOfPost = joi.object({
   id: generalFields.id
